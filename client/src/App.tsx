@@ -1,10 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import { Input } from "./components/ui/input";
 import axios from "axios";
 
+interface Product {
+	id: number;
+	name: string;
+	price: number;
+}
 function App() {
 	const [location, setLocation] = useState<string>("");
+	const [products, setProducts] = useState<Product[]>([]);
+
+	useEffect(() => {
+		console.log("Products scraped: ", products);
+	}, [products]);
 
 	const handleLocation = async (location: string) => {
 		// sample location string: Austin%2C+Texas+73301
@@ -13,7 +23,7 @@ function App() {
 		// const zip_REGEX = /\+([0-9]{5})/;
 		const words = location.split(" ");
 		console.log("words: ", words[0]);
-		const city = (words[0]).substring(0, (words[0]).length - 1);
+		const city = words[0].substring(0, words[0].length - 1);
 		const state = words[1];
 		const zip = words[2];
 
@@ -21,14 +31,16 @@ function App() {
 		console.log("state: ", state);
 		console.log("zip: ", zip);
 		try {
-			// const resp = await axios.get(
-			// 	`grabGeolocation?q=${city}&${state}&{zip}`
-			// );
 			const resp = await axios.post("http://127.0.0.1:8000/grabGeolocation", {
 				city: city,
 				state: state,
-				zip: zip
-			})
+				zip: zip,
+			});
+
+			const respProd: Product[] = resp["data"]["products"]; // gives me a list of json products
+			setProducts(respProd);
+
+			console.log("prod: ", respProd);
 			console.log(resp);
 		} catch (error) {
 			console.log(error);
@@ -56,6 +68,25 @@ function App() {
 						>
 							Eggsplore the prices!
 						</button>
+
+						<table>
+							<thead>
+								<tr>
+									<th>Name</th>
+									<th>Price</th>
+								</tr>
+							</thead>
+							<tbody>
+								{products.map((item: Product) => {
+									return (
+										<tr key={item.id}>
+											<td>{item.name}</td>
+											<td>${item.price}</td>
+										</tr>
+									);
+								})}
+							</tbody>
+						</table>
 					</div>
 				</div>
 			</div>
