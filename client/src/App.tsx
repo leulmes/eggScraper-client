@@ -5,19 +5,17 @@ import axios from "axios";
 
 interface Product {
 	id: number;
+	store: string;
+	loc: string;
 	name: string;
 	price: number;
 }
 function App() {
 	const [location, setLocation] = useState<string>("");
 	const [products, setProducts] = useState<Product[]>([]);
+	const [storeLoc, setStoreLoc] = useState<string>("");
 
-	function comparePrices(prod: Product) {
-		let a = prod.price;
-		let b = prod.price;
-		return a - b;
-	  }
-
+	
 	useEffect(() => {
 		console.log("Products scraped: ", products);
 	}, [products]);
@@ -46,6 +44,7 @@ function App() {
 			const respProd: Product[] = resp["data"]["products"]; // gives me a list of json products
 			respProd.sort((a, b) => a.price - b.price); // sort the products based on price
 			setProducts(respProd);
+			setStoreLoc(respProd[0].loc);
 
 			console.log("prod: ", respProd);
 			console.log(resp);
@@ -76,7 +75,8 @@ function App() {
 							Eggsplore the prices!
 						</button>
 
-						<label>Grocery Store</label>
+						<label>Shoppers</label>
+						<label>{storeLoc}</label>
 						<table className="border-separate border-spacing-x-7 border-spacing-y-2 border border-black rounded-2xl">
 							<thead className="">
 								<tr className="">
