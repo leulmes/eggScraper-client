@@ -12,6 +12,12 @@ function App() {
 	const [location, setLocation] = useState<string>("");
 	const [products, setProducts] = useState<Product[]>([]);
 
+	function comparePrices(prod: Product) {
+		let a = prod.price;
+		let b = prod.price;
+		return a - b;
+	  }
+
 	useEffect(() => {
 		console.log("Products scraped: ", products);
 	}, [products]);
@@ -38,6 +44,7 @@ function App() {
 			});
 
 			const respProd: Product[] = resp["data"]["products"]; // gives me a list of json products
+			respProd.sort((a, b) => a.price - b.price); // sort the products based on price
 			setProducts(respProd);
 
 			console.log("prod: ", respProd);
@@ -69,17 +76,18 @@ function App() {
 							Eggsplore the prices!
 						</button>
 
-						<table>
-							<thead>
-								<tr>
+						<label>Grocery Store</label>
+						<table className="border-separate border-spacing-x-7 border-spacing-y-2 border border-black rounded-2xl">
+							<thead className="">
+								<tr className="">
 									<th>Name</th>
 									<th>Price</th>
 								</tr>
 							</thead>
-							<tbody>
+							<tbody className="">
 								{products.map((item: Product) => {
 									return (
-										<tr key={item.id}>
+										<tr key={item.id} className="">
 											<td>{item.name}</td>
 											<td>${item.price}</td>
 										</tr>
