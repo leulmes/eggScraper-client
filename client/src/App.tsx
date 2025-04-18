@@ -21,19 +21,29 @@ function App() {
 	}, [products]);
 
 	const handleLocation = async (location: string) => {
-		// sample location string: Austin%2C+Texas+73301
-		// const city_REGEX = /^([a-zA-Z]+?)%2C/;
-		// const state_REGEX = /\+([a-zA-Z]+)\+/;
-		// const zip_REGEX = /\+([0-9]{5})/;
-		const words = location.split(" ");
-		console.log("words: ", words[0]);
-		const city = words[0].substring(0, words[0].length - 1);
-		const state = words[1];
-		const zip = words[2];
+		// sample location string: "Austin, TX 10382"
+		const city_REGEX = /^([a-zA-Z ]+)/;
+		const state_zip_REGEX = /(,[a-zA-Z \d ]+)/;
+		
+		const cityMatch = location.match(city_REGEX);
+		const stateZipMatch = location.match(state_zip_REGEX);
+		let city = cityMatch ? cityMatch[0] : "";
+
+		let stateZip = stateZipMatch ? ((stateZipMatch[0]).substring(1)).trim() : ""; // clean up the stateZip i.e "CA 4056"
+		const zip_REGEX = /[\d]+/;
+		
+		const stateMatch = stateZip.match(city_REGEX); // uses same regex as the city regex
+		const zipMatch = stateZip.match(zip_REGEX);
+		const state = stateMatch ? stateMatch[0].trim() : "";
+		const zip = zipMatch ? zipMatch[0].trim() : "";
+
+		console.log(state);
+		console.log(zip);
 
 		console.log("city: ", city);
-		console.log("state: ", state);
-		console.log("zip: ", zip);
+		console.log(stateZip);
+		console.log(state);
+		console.log(zip);
 		try {
 			const resp = await axios.post("http://127.0.0.1:8000/grabGeolocation", {
 				city: city,
